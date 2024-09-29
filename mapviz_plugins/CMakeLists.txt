@@ -196,6 +196,7 @@ target_link_libraries(${PROJECT_NAME}
     ${GLUT_LIBRARY}
     ${OpenCV_LIBS}
     ${Qt_LIBRARIES}
+    /lib/x86_64-linux-gnu/libtiff.so.5
 )
 
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STRLESS "kinetic")

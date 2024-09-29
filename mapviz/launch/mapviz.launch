@@ -1,10 +1,20 @@
 <launch>
 
-  <node pkg="mapviz" type="mapviz" name="mapviz"></node>
+  <node pkg="mapviz" type="mapviz" name="mapviz">
+    <!-- kitti  /kitti/velo/pointcloud -->
+    <!-- <remap from="/mapviz/imu" to="/kitti/oxts/imu"/> -->
+
+    <remap from="/mapviz/imu" to="/chcnav/imu"/>
+
+    <!-- Kaist /ns1/velodyne_points -->
+    <!-- <remap from="/mapviz/imu" to="/imu/data_raw"/> -->
+  </node>
 
   <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
+    <!-- <param name="local_xy_frame" value="/map"/> -->
+    <!-- <param name="local_xy_origin" value="auto"/> -->
     <param name="local_xy_frame" value="/map"/>
-    <param name="local_xy_origin" value="swri"/>
+    <param name="local_xy_origin" value="auto"/>
     <rosparam param="local_xy_origins">
       [{ name: swri,
          latitude: 29.45196669,
@@ -18,10 +28,26 @@
          altitude: 200.0,
          heading: 0.0}]
     </rosparam>
+    <!-- <remap from="fix" to="/kitti/oxts/gps/fix"/> -->
+    <!-- <remap from="fix" to="/asensing_570d/gps/fix"/> -->
+    <!-- <remap from="fix" to="/570d/gps/fix"/> -->
+    <!-- <remap from="fix" to="/gps/fix"/> -->
+    <!-- <remap from="fix" to="/obgins_gps"/> -->
+    <!-- <remap from="fix" to="/gpsfix"/> -->
+    <!-- <remap from="fix" to="/asensing_driver/gps/fix"/> -->
+    <remap from="fix" to="/chcnav/nav_sat_fix"/>
+    <!-- <remap from="fix" to="/gnss"/> -->
   </node>
 
   <node pkg="tf" type="static_transform_publisher" name="swri_transform" args="0 0 0 0 0 0 /map /origin 100"  />
+  <node pkg="tf" type="static_transform_publisher" name="swri_transform_2" args="0 0 0 0 0 0 /mapviz_utm_origin /imu_link 100"  />
 
+  <!-- kitti  /kitti/velo/pointcloud -->
+  <!-- <node pkg="tf" type="static_transform_publisher" name="swri_transform_3" args="-8.086759e-01 3.195559e-01 -7.997231e-01 0 0 0 /imu_link /velo_link 100"  /> -->
 
+  <node pkg="tf" type="static_transform_publisher" name="swri_transform_3" args="5.23584 1.14538 2.08513 -0.00190285 0.00299083 0.878546 0.477644 /imu_link /hslidar_left 100"  />
+  
+  <!-- Kaist /ns1/velodyne_points -->
+  <!-- <node pkg="tf" type="static_transform_publisher" name="swri_transform_3" args="0.263596 0.373928 -0.24377 0.76 2.36 3.1224 /imu_link /right_velodyne 100"  /> -->
 
 </launch>

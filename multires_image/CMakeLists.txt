@@ -79,6 +79,7 @@ target_link_libraries(${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${Qt_LIBRARIES}
   ${GLU_LIBRARY}
+  /lib/x86_64-linux-gnu/libtiff.so.5
 )
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STRLESS "kinetic")
   set_target_properties(${PROJECT_NAME} PROPERTIES 
@@ -98,7 +99,7 @@ qt5_wrap_ui(WIDGET_SRC_FILES ${UI_FILES})
 qt5_wrap_cpp(WIDGET_SRC_FILES include/${PROJECT_NAME}/QGLMap.h)
 
 add_library(multires_widget ${WIDGET_SRC_FILES})
-target_link_libraries(multires_widget ${PROJECT_NAME})
+target_link_libraries(multires_widget ${PROJECT_NAME} /lib/x86_64-linux-gnu/libtiff.so.5)
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STRLESS "kinetic")
   set_target_properties(multires_widget PROPERTIES 
     CXX_STANDARD 11
@@ -110,7 +111,7 @@ endif()
 set(VIEW_NODE_SRC_FILES src/nodes/multires_view_node.cpp)
 qt5_wrap_cpp(VIEW_NODE_SRC_FILES include/${PROJECT_NAME}/multires_view_node.h)
 add_executable(multires_view_node ${VIEW_NODE_SRC_FILES})
-target_link_libraries(multires_view_node multires_widget)
+target_link_libraries(multires_view_node multires_widget /lib/x86_64-linux-gnu/libtiff.so.5)
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STRLESS "kinetic")
   set_target_properties(multires_view_node PROPERTIES 
     CXX_STANDARD 11
@@ -126,7 +127,7 @@ qt5_wrap_ui(MAPVIZ_SRC_FILES src/multires_config.ui)
 qt5_wrap_cpp(MAPVIZ_SRC_FILES include/${PROJECT_NAME}/${PROJECT_NAME}_plugin.h)
 
 add_library(${PROJECT_NAME}_plugin ${MAPVIZ_SRC_FILES})
-target_link_libraries(${PROJECT_NAME}_plugin ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_plugin ${PROJECT_NAME} /lib/x86_64-linux-gnu/libtiff.so.5)
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STRLESS "kinetic")
   set_target_properties(${PROJECT_NAME}_plugin PROPERTIES 
     CXX_STANDARD 11

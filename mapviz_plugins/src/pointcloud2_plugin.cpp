@@ -544,6 +544,7 @@ namespace mapviz_plugins
         float x = *reinterpret_cast<const float*>(ptr + xoff);
         float y = *reinterpret_cast<const float*>(ptr + yoff);
         float z = *reinterpret_cast<const float*>(ptr + zoff);
+        if(x < -30 || y < -30 || 30 < x || 30 < y) continue;
 
         StampedPoint& point = scan.points[i];
         point.point = tf::Point(x, y, z);

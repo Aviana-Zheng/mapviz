@@ -87,6 +87,7 @@ target_link_libraries(${PROJECT_NAME}
   ${OPENGL_glu_LIBRARY}
   ${JSONCPP_LIBRARIES}
   ${catkin_LIBRARIES}
+  /lib/x86_64-linux-gnu/libtiff.so.5
 )
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STRLESS "kinetic")
   set_target_properties(${PROJECT_NAME} PROPERTIES 
@@ -104,7 +105,7 @@ qt5_wrap_ui(PLUGIN_SRC_FILES ${PLUGIN_UI_FILES})
 qt5_wrap_cpp(PLUGIN_SRC_FILES include/${PROJECT_NAME}/${PROJECT_NAME}_plugin.h)
 
 add_library(${PROJECT_NAME}_plugin ${PLUGIN_SRC_FILES})
-target_link_libraries(${PROJECT_NAME}_plugin ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_plugin ${PROJECT_NAME} /lib/x86_64-linux-gnu/libtiff.so.5)
 if ($ENV{ROS_DISTRO} STREQUAL "kinetic" OR $ENV{ROS_DISTRO} STRLESS "kinetic")
   set_target_properties(${PROJECT_NAME}_plugin PROPERTIES 
     CXX_STANDARD 11

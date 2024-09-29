@@ -331,7 +331,7 @@ namespace mapviz_plugins
     glColor4d(color_.redF(), color_.greenF(), color_.blueF(), 1.0);
     if (draw_style_ == LINES && points_.size()>0)
     {
-      glLineWidth(3);
+      glLineWidth(6);
       glBegin(GL_LINE_STRIP);
     }
     else

@@ -31,12 +31,10 @@
 #include <opencv2/core/core.hpp>
 
 // ROS libraries
+#include <mapviz/select_topic_dialog.h>
 #include <ros/master.h>
-
 #include <swri_image_util/geometry_util.h>
 #include <swri_transform_util/transform_util.h>
-
-#include <mapviz/select_topic_dialog.h>
 
 // Declare plugin
 #include <pluginlib/class_list_macros.h>
@@ -61,21 +59,21 @@ namespace mapviz_plugins
     ui_.status->setPalette(p3);
 
     QObject::connect(ui_.selecttopic, SIGNAL(clicked()), this,
-                     SLOT(SelectTopic()));
+                    SLOT(SelectTopic()));
     QObject::connect(ui_.topic, SIGNAL(editingFinished()), this,
-                     SLOT(TopicEdited()));
+                    SLOT(TopicEdited()));
     QObject::connect(ui_.use_latest_transforms, SIGNAL(clicked(bool)),
-                     this, SLOT(SetUseLatestTransforms(bool)));
+                      this, SLOT(SetUseLatestTransforms(bool)));
     QObject::connect(ui_.positiontolerance, SIGNAL(valueChanged(double)), this,
-                     SLOT(PositionToleranceChanged(double)));
+                    SLOT(PositionToleranceChanged(double)));
     QObject::connect(ui_.buffersize, SIGNAL(valueChanged(int)), this,
-                     SLOT(BufferSizeChanged(int)));
+                    SLOT(BufferSizeChanged(int)));
     QObject::connect(ui_.drawstyle, SIGNAL(activated(QString)), this,
-                     SLOT(SetDrawStyle(QString)));
+                    SLOT(SetDrawStyle(QString)));
     QObject::connect(ui_.color, SIGNAL(colorEdited(const QColor&)), this,
-                     SLOT(SetColor(const QColor&)));
+                    SLOT(SetColor(const QColor&)));
     QObject::connect(ui_.buttonResetBuffer, SIGNAL(pressed()), this,
-                     SLOT(ClearPoints()));
+                    SLOT(ClearPoints()));
   }
 
   NavSatPlugin::~NavSatPlugin()
@@ -87,8 +85,8 @@ namespace mapviz_plugins
     ros::master::TopicInfo topic =
         mapviz::SelectTopicDialog::selectTopic("sensor_msgs/NavSatFix");
 
-    if (!topic.name.empty())
-    {
+      if (!topic.name.empty())
+      {
       ui_.topic->setText(QString::fromStdString(topic.name));
       TopicEdited();
     }
@@ -111,8 +109,27 @@ namespace mapviz_plugins
         navsat_sub_ = node_.subscribe(topic_, 10, &NavSatPlugin::NavSatFixCallback, this);
 
         ROS_INFO("Subscribing to %s", topic_.c_str());
+
+        imu_sub_ =
+            node_.subscribe("/mapviz/imu", 10, &NavSatPlugin::ImuCallback, this);
       }
     }
+  }
+
+  void NavSatPlugin::ImuCallback(const sensor_msgs::ImuConstPtr imu) {
+    if (!tf_manager_->LocalXyUtil()->Initialized()) {
+      return;
+    }
+    tf::Vector3 origin(0.0, 0.0, 0.0);
+    tf::Quaternion rotation;
+    tf::quaternionMsgToTF(imu->orientation, rotation);
+    tf::Transform transform(rotation, origin);
+
+    tf::StampedTransform stamped_transform(transform, imu->header.stamp,
+                                          "/mapviz_utm_origin_trans",
+                                          "/mapviz_utm_origin");
+
+    tf_broadcaster_.sendTransform(stamped_transform);
   }
 
   void NavSatPlugin::NavSatFixCallback(
@@ -138,6 +155,17 @@ namespace mapviz_plugins
     stamped_point.point = tf::Point(x, y, navsat->altitude);
     stamped_point.orientation = tf::createQuaternionFromYaw(0.0);
     stamped_point.source_frame = tf_manager_->LocalXyUtil()->Frame();
+
+    tf::Vector3 origin(x, y, navsat->altitude);
+    tf::Quaternion rotation;
+    rotation.setRPY(0.0, 0.0, 0.0);
+    tf::Transform transform(rotation, origin);
+
+    tf::StampedTransform stamped_transform(transform, navsat->header.stamp,
+                                          stamped_point.source_frame,
+                                          "/mapviz_utm_origin_trans");
+
+    tf_broadcaster_.sendTransform(stamped_transform);
 
     pushPoint( std::move(stamped_point ) );
   }
@@ -205,12 +233,12 @@ namespace mapviz_plugins
       if (draw_style == "lines")
       {
         ui_.drawstyle->setCurrentIndex(0);
-        SetDrawStyle( LINES );
+          SetDrawStyle( LINES );
       }
       else if (draw_style == "points")
       {
         ui_.drawstyle->setCurrentIndex(1);
-        SetDrawStyle( POINTS );
+          SetDrawStyle( POINTS );
       }
     }
 
@@ -254,7 +282,7 @@ namespace mapviz_plugins
     emitter << YAML::Key << "use_latest_transforms" << YAML::Value << ui_.use_latest_transforms->isChecked();
 
     emitter << YAML::Key << "position_tolerance" <<
-               YAML::Value << positionTolerance();
+                YAML::Value << positionTolerance();
 
     emitter << YAML::Key << "buffer_size" << YAML::Value << bufferSize();
   }

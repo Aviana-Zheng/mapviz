@@ -43,6 +43,19 @@ find_package(Qt5Widgets REQUIRED)
 # Setting these variable so catkin_package can export Qt as a dependency
 set(Qt_FOUND TRUE)
 set(Qt_INCLUDE_DIRS "${Qt5Concurrent_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5OpenGL_INCLUDE_DIRS};${Qt5Widgets_INCLUDE_DIRS}")
+# QtConcurrent 是命名空间 (namespace)，它提供了高层次的函数接口 (APIs)，使所写程序，可根据计算机的 CPU 核数，自动调整运行的线程数目。
+
+# Qt Core，提供核心的非 GUI 功能，所有模块都需要这个模块。
+# 这个模块的类包括了动画框架、定时器、各个容器类、时间日期类、事件、IO、JSON、插件机制、智能指针、图形（矩形、路径等）、线程、XML 等。
+# 所有这些类都可以通过  头文件引入。
+
+# Qt Gui，提供 GUI 程序的基本功能，包括与窗口系统的集成、事件处理、OpenGL 和 OpenGL ES 集成、2D 图像、字体、拖放等。
+# 这些类一般由 Qt 用户界面类内部使用，当然也可以用于访问底层的 OpenGL ES 图像 API。Qt Gui 模块提供的是所有图形用户界面程序都需要的通用功能。
+
+# OpenGL现在分为核心模式和立即渲染模式(即固定的渲染管线)
+# 若要写一个OpenGL的可视化程序则需要另外两个库的辅助GLFW和GLAD
+
+# Qt Widgets模块提供了一组UI元素来创建经典的桌面风格的用户界面
 set(Qt_LIBRARIES
   Qt5::Concurrent
   Qt5::Core
@@ -141,6 +154,7 @@ target_link_libraries(rqt_${PROJECT_NAME}
   ${GLEW_LIBRARIES}
   ${OpenCV_LIBS}
   ${catkin_LIBRARIES}
+  /lib/x86_64-linux-gnu/libtiff.so.5
 )
 add_dependencies(rqt_${PROJECT_NAME}
   ${catkin_EXPORTED_TARGETS}
@@ -172,6 +186,7 @@ target_link_libraries(${PROJECT_NAME}
   ${GLU_LIBRARY}
   ${OpenCV_LIBRARIES}
   ${catkin_LIBRARIES}
+  /lib/x86_64-linux-gnu/libtiff.so.5
 )
 add_dependencies(${PROJECT_NAME}
   ${catkin_EXPORTED_TARGETS}
